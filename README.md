@@ -1,10 +1,5 @@
 Metadata Export
 ================
-
-**Active development / experimental.** This module is an early proof of concept. APIs, output
-format, and behaviour will change without notice, and not everything described here is fully
-verified yet. Not for production use.
-
 Description
 -----------
 Initializer ([openmrs-module-initializer](https://github.com/mekomsolutions/openmrs-module-initializer))
@@ -12,8 +7,6 @@ can *load* a `configuration/` content package into OpenMRS, but it cannot produc
 does the reverse: it reads metadata out of a running, populated OpenMRS instance and writes it back
 out in the Initializer format, so a configuration can be captured from a server and replayed
 elsewhere.
-
-It is export only. It never imports or applies metadata; loading remains Initializer's job.
 
 Currently supported domains:
 
@@ -29,83 +22,83 @@ Currently supported domains:
 * Visit types (name, description)
 * Relationship types (name, description, a_is_to_b, b_is_to_a, preferred, weight)
 * Attribute types (name, description, Min occurs, Max occurs, Datatype classname, Datatype config, Preferred handler classname, Handler config)
-* Global properties (property, value) — written as XML, since Initializer loads this domain from
+* Global properties (property, value): written as XML, since Initializer loads this domain from
   XML rather than CSV
 * Encounter Roles (name, description)
 * Person Attribute Types (name, description, searchable, format, foreign uuid, edit privilege)
 * Location Tags (name, description)
-* Locations (name, description, parent location, tags, address fields) — parent locations and tags
+* Locations (name, description, parent location, tags, address fields): parent locations and tags
   are pulled in via cross-domain closure. Tag membership is emitted inline as `Tag|<name>` columns,
   which is Initializer's own equivalent of the standalone `locationtagmaps` domain, so that data
   needs no separate file
-* Drugs (name, description, strength, concept drug, concept dosage form, ingredients, mappings) —
+* Drugs (name, description, strength, concept drug, concept dosage form, ingredients, mappings):
   drug/dosage-form/ingredient concepts are pulled in via cross-domain closure
-* Order types (name, description, java class name, parent, concept classes) — parent order types and
+* Order types (name, description, java class name, parent, concept classes): parent order types and
   concept classes are pulled in via cross-domain closure
-* Flags (name, criteria, evaluator, message, priority, enabled, tags, description) — requires the patientflags module (3.0+)
-* Order frequencies (frequency per day, concept frequency) — the referenced concept is pulled in via
-  cross domain closure
-* Programs (name, description, program concept, outcomes concept) — the referenced concepts are pulled in via
-  cross domain closure
-* Program workflows (program, workflow concept) — the referenced program and concept are pulled in
+* Flags (name, criteria, evaluator, message, priority, enabled, tags, description): requires the patientflags module (3.0+)
+* Order frequencies (frequency per day, concept frequency): the referenced concept is pulled in via
+  cross-domain closure
+* Programs (name, description, program concept, outcomes concept): the referenced concepts are pulled in via
+  cross-domain closure
+* Program workflows (program, workflow concept): the referenced program and concept are pulled in
   via cross-domain closure
-* Concept reference ranges (concept numeric, absolute/critical/normal low and high, criteria) — the
-  referenced concept numeric is pulled in via cross domain closure
-* Concept sets (parent concept, member concept, member type, sort weight) — the referenced parent
-  and member concepts are pulled in via cross domain closure
-* Program workflow states (workflow, state concept, initial, terminal) — the referenced workflow and
-  state concept are pulled in via cross domain closure
-* Procedure types (name, description) — requires the emrapi module (3.4+)
-* Metadata sets (name, description) — requires the metadatamapping module
+* Concept reference ranges (concept numeric, absolute/critical/normal low and high, criteria): the
+  referenced concept numeric is pulled in via cross-domain closure
+* Concept sets (parent concept, member concept, member type, sort weight): the referenced parent
+  and member concepts are pulled in via cross-domain closure
+* Program workflow states (workflow, state concept, initial, terminal): the referenced workflow and
+  state concept are pulled in via cross-domain closure
+* Procedure types (name, description): requires the emrapi module (3.4+)
+* Metadata sets (name, description): requires the metadatamapping module
 * Metadata set members (name, description, sort weight, metadata class, metadata uuid, metadata
-  set uuid) — the owning metadata set and the referenced metadata item are pulled in via
+  set uuid): the owning metadata set and the referenced metadata item are pulled in via
   cross-domain closure; requires the metadatamapping module
-* Metadata term mappings (mapping code, mapping source, metadata class name, metadata uuid) — the
+* Metadata term mappings (mapping code, mapping source, metadata class name, metadata uuid): the
   referenced metadata item is pulled in via cross-domain closure; requires the metadatamapping
   module
 * Metadata sharing (raw zip packages already built and published through the metadatasharing
-  module's own UI, copied out as-is; not CSV/XML — one file per package) — requires the
+  module's own UI, copied out as-is; not CSV/XML, one file per package): requires the
   metadatasharing module
 * Identifier sources (identifier type, name, description; sequential: prefix, suffix, first
   identifier base, min/max length, base character set; remote: url, user, password; pool: backing
-  source, batch size, minimum size, refill with task, sequential allocation) — written as
+  source, batch size, minimum size, refill with task, sequential allocation): written as
   idgen_sequential/idgen_remote/idgen_pool CSVs with pools ordered last so backing sources load
-  first; remote-source passwords are never exported in plaintext — each row carries a
+  first; remote-source passwords are never exported in plaintext: each row carries a
   `property:idgen.remote.password.<identifier source uuid>` placeholder, and the importing server
   must define the `idgen.remote.password.<identifier source uuid>` system or OpenMRS runtime
-  property (retired remote sources included — Initializer still requires the password when it
+  property (retired remote sources included; Initializer still requires the password when it
   bootstraps them); sources Initializer cannot import are left out and recorded as exclusions (see the
-  note on exclusions under "Export packages (REST)") — custom identifier source types from other modules, remote sources with no
-  user (Initializer requires one), pools whose backing source is missing or itself left out — as are
+  note on exclusions under "Export packages (REST)"): custom identifier source types from other modules, remote sources with no
+  user (Initializer requires one), pools whose backing source is missing or itself left out, as are
   auto generation options pointing at any such source; reserved identifiers on a source are not exported (Initializer
   has no column for them) and are flagged with a warning; requires the idgen module (4.6+)
 * Auto generation options (identifier type, location, identifier source, manual entry enabled,
-  auto generation enabled) — the referenced identifier type, source and location are pulled in via
+  auto generation enabled): the referenced identifier type, source and location are pulled in via
   cross-domain closure; requires the idgen module (4.6+)
-* FHIR concept sources (concept source, url) — the referenced concept source is pulled in via
+* FHIR concept sources (concept source, url): the referenced concept source is pulled in via
   cross-domain closure; name and description are not exported (Initializer has no columns for
-  them — it sets the name from the concept source when it creates the row); rows without a
+  them; it sets the name from the concept source when it creates the row); rows without a
   concept source are left out as exclusions (Initializer requires that column), and when several
   rows share one concept source only one is exported, preferring the unretired row, the rest
   recorded as exclusions (Initializer matches rows by concept source, so duplicates would collapse
   unpredictably on import); requires the fhir2 module (1.6+)
-* FHIR patient identifier systems (patient identifier type, url) — the referenced patient
+* FHIR patient identifier systems (patient identifier type, url): the referenced patient
   identifier type is pulled in via cross-domain closure; name and description are not exported
-  (Initializer has no columns for them — it overwrites the name with the identifier type's name
+  (Initializer has no columns for them; it overwrites the name with the identifier type's name
   on import); rows without an identifier type are left out as exclusions (Initializer requires
   that column), and when several rows share one identifier type only one is exported, preferring
   the unretired row, the rest recorded as exclusions (Initializer matches rows by identifier type,
   so duplicates would collapse unpredictably on import); requires the fhir2 module (1.6+)
 * Address hierarchy (the `addressConfiguration.xml`, rebuilt from the ordered hierarchy levels and
   the live address template, plus a headerless `addresshierarchy.csv` of one root-to-leaf path per
-  leaf entry; not CSV/XML rows — a whole-config directory) — requires the addresshierarchy module
-* Cohort types (name, description) — requires the cohort module (3.5+)
+  leaf entry; not CSV/XML rows but a whole-config directory): requires the addresshierarchy module
+* Cohort types (name, description): requires the cohort module (3.5+)
 * Cohort attribute types (name, description, datatype classname, preferred handler classname,
-  handler config, min/max occurs) — retired attribute types are not exported (Initializer's parser
+  handler config, min/max occurs): retired attribute types are not exported (Initializer's parser
   cannot resolve them: its lookups exclude retired rows, so re-importing one fails on the name/uuid
   constraints), and datatype config is not exported (Initializer has no column for it); requires
   the cohort module (3.5+)
-* System tasks (name, title, description, priority, default assignee role, rationale) — the
+* System tasks (name, title, description, priority, default assignee role, rationale): the
   default assignee is written as the provider role's uuid and returned as a cross-domain
   dependency, but provider roles themselves are not yet exported: Initializer's `providerroles`
   domain still targets the providermanagement module's provider roles, while core 2.8+ has its own
@@ -116,7 +109,7 @@ Currently supported domains:
   server or the row fails to import (core's own `provider_role` table is not consulted); a task
   whose assignee role no longer exists on the exporting server is exported without the assignee
   column, with a warning; requires the tasks module (1.0+)
-* Queues (name, description, service, status concept set, priority concept set, location) — the
+* Queues (name, description, service, status concept set, priority concept set, location): the
   referenced concepts and location are pulled in via cross-domain closure, and so are the
   `queue.serviceConceptSetName` global property and the concept set it names, because the queue
   module validates every imported queue against them (the importing server rejects each row until
@@ -129,7 +122,7 @@ Currently supported domains:
   `JSON schema` resource is written back as the file, with the `name`, `version`, `description`,
   `published`, `retired` and `encounter` entries Initializer copies onto the form refreshed from the
   form itself; `encounter` carries the encounter type's name, which is what Initializer resolves
-  even though its own error message speaks of an "id") — the encounter type and the form's
+  even though its own error message speaks of an "id"): the encounter type and the form's
   translation resources are pulled in via cross-domain closure; retired forms and all but the
   newest version of a name are not exported and are recorded as exclusions (Initializer cannot
   create a retired form: its loader saves the retired flag without a retire reason, which core's
@@ -140,62 +133,71 @@ Currently supported domains:
   schema resource has no readable JSON object is not exported either, and recorded as an exclusion; a form
   without an encounter type is still exported but flagged with a warning, because Initializer
   rejects the file until an `encounter` entry is added (unless its `processor` is not the
-  encounter form processor); note that Initializer ignores any `uuid` in the file and derives the
-  form's uuid from its name and version, so the imported form keeps the source uuid only when the
-  source form was itself loaded by Initializer
+  encounter form processor); because Initializer ignores any `uuid` in the file (see above), the
+  imported form keeps the source uuid only when the source form was itself loaded by Initializer
 * AMPATH form translations (one JSON file per form and language, written back from the form's
   `<form name>_translations_<language>` resource, whether Initializer saved it as a long free text
   or the O3 Form Builder saved it with no datatype at all, with the `form` entry refreshed to the
-  form's name and a missing `language` filled in from the resource name) — the owning form is pulled in via
+  form's name and a missing `language` filled in from the resource name): the owning form is pulled in via
   cross-domain closure; only translations of exported forms (see above) are exported, and a
   resource whose clob is missing or does not hold a JSON object is left out as an exclusion, since
   there is nothing to write; a resource carrying only `form_name_translation` (the localized form
   name, a documented Initializer use) is exported like any other
-* Appointment specialities (name) — requires the Bahmni appointments module (1.2.1+)
+* Appointment specialities (name): requires the Bahmni appointments module (1.2.1+)
 * Appointment service definitions (name, description, duration, start time, end time, max load,
-  speciality, location, label colour) — the speciality and location are written by uuid and pulled
+  speciality, location, label colour): the speciality and location are written by uuid and pulled
   in via cross-domain closure; start and end times are written as `HH:mm`, the only format
   Initializer parses, so seconds are dropped; voided definitions are not exported by design:
   Initializer could re-void one by uuid, but on a fresh target a voided row bootstraps blank and
   fails the not-null name, and the appointments module rejects a save whose name is already held
   by a live definition; weekly availability and the initial appointment status are not exported
   (Initializer has no column for them); requires the Bahmni appointments module (1.2.1+)
-* Appointment service types (name, duration, service definition) — the owning service definition is
+* Appointment service types (name, duration, service definition): the owning service definition is
   written by uuid and pulled in via cross-domain closure; voided types and the types of voided
   definitions are not exported, so a voided definition can never enter the package as a live row
   through its types; note that Initializer's own loader rebuilds a definition's type set from its
   non-voided types when it imports a type, so voided types already on the importing server are
   deleted by the import; requires the Bahmni appointments module (1.2.1+)
-* Billable services (service name, short name, concept, service type, service status) — referenced
+* Billable services (service name, short name, concept, service type, service status): referenced
   concepts are pulled in via cross-domain closure; requires the billing module (2.4.0+)
-* Cash points (name, description, location) — referenced location is pulled in via cross-domain
+* Cash points (name, description, location): referenced location is pulled in via cross-domain
   closure; requires the billing module (2.4.0+)
-* Cashier item prices (name, price, payment mode, stock item, billable service) — referenced
+* Cashier item prices (name, price, payment mode, stock item, billable service): referenced
   payment mode and billable service are pulled in via cross-domain closure; **stock-item references
   are not self-contained**: `CashierItemPriceLineProcessor` resolves a stock item through
   `StockManagementService.getStockItemByUuid` and throws if it is absent, and Initializer has no
   stock-item domain for the closure to fall back on, so rows that reference a stock item only load
   onto a server that already holds the same stock items; requires the billing module (2.4.0+)
-* Payment modes (name, attributes) — requires the billing module (2.4.0+)
+* Payment modes (name, attributes): requires the billing module (2.4.0+)
 
-Domains contributed by other modules (supportable, but depend on the module being present;
-not yet covered):
+Domains contributed by other modules that are supportable but not covered, and why:
 
-* Forms (Bahmni forms, HTML forms) (Optional)
+* Bahmni forms and HTML forms: neither form engine is used in the O3 distribution, which is what
+  this module targets.
+* Data filter mappings: the datafilter module does not start on the platform baseline (its
+  `FullTextQueryCreatedEventListener` depends on a core class removed in 2.8.0), and its stored
+  mappings reference entities by database id rather than uuid, so they are not portable between
+  servers without being resolved first.
 
-Non-exportable Initializer domains (Liquibase, JSON key-values, OCL, Dispositions, Data filter mappings) are
-out of scope.
+Initializer domains that cannot be exported, and why:
+
+* Liquibase: the domain runs arbitrary changesets against the database; a running instance holds
+  the changes' effects, not the changesets, so there is nothing to read back.
+* JSON key-values: Initializer loads these files into an in-memory lookup for other modules; they
+  are never persisted to the database.
+* OCL: the domain imports concept dictionary zips produced by Open Concept Lab. Concepts loaded
+  that way are exported through the concept domains above; the OCL export itself is produced by
+  OCL, not by the OpenMRS instance.
+* Dispositions: the domain replaces the emrapi disposition configuration in memory; the
+  configuration is not persisted to the database.
 
 How it works
 ------------
-When the `metadataexport.exportOnStartup` global property is `true`, the activator exports every
-instance of every registered domain on module startup. It runs on a daemon thread (so it has full
-read access and does not block startup) and writes to:
+When the `metadataexport.exportOnStartup` global property is `true` (default `false`), the
+activator exports every instance of every registered domain on module startup. It runs on a daemon
+thread (so it has full read access and does not block startup) and writes to:
 
     <OpenMRS application data directory>/metadata_export/configuration/<domain>/...
-
-The property defaults to `false`, so a fresh install exports nothing until an administrator turns
-it on. Named export packages (below) are built on demand and do not depend on it.
 
 The export is built in two separated stages:
 
@@ -208,13 +210,11 @@ The export is built in two separated stages:
 
 Export packages (REST)
 ----------------------
-Besides the optional export-everything-on-startup behaviour, named *export packages* can be
-defined and built over REST. A package describes what to export — a list of entries, each an Initializer
-domain optionally narrowed to specific item uuids (empty list = the whole domain) — so e.g. a
-"Site A locations" package exports just one site's locations (plus dependency closure). A
-package with *no entries at all* exports every registered domain; `GET /domains` lists which
-domains are registered on the server. Package
-definitions are stored in the database; every build of a package gets an incrementing version, a
+Named *export packages* can be defined and built over REST. A package describes what to export,
+a list of entries, each an Initializer domain optionally narrowed to specific item uuids (empty
+list = the whole domain), so e.g. a "Site A locations" package exports just one site's locations
+(plus dependency closure). A package with *no entries at all* exports every registered domain.
+Every build of a package gets an incrementing version, a
 status (`QUEUED` → `RUNNING` → `COMPLETED`/`FAILED`), and a downloadable zip laid out as an
 OpenMRS content package: the Initializer tree under `configuration/backend_configuration/` (where
 the OpenMRS SDK installs it from), a `content.properties` carrying the package `name` and build
@@ -223,15 +223,13 @@ for every domain exported in full, the rows that were left out and why (its `exc
 
 Exclusions are rows a domain has on the server but never exports because Initializer could not load
 them on a target: retired queues, voided cohort types, identifier sources without a user, superseded
-form versions. A full export of such a domain records them in `metadataexport-manifest.json` under
-`excluded` and logs one summary line per domain. A package that names an excluded row by uuid does
-not silently drop it: the build fails with the reason, separately from any uuid the domain does not
-know at all.
+form versions. A package that names an excluded row by uuid does not silently drop it: the build
+fails with the reason, separately from any uuid the domain does not know at all.
 
 Builds run asynchronously on a daemon thread; trigger, then poll. Packages and builds are
 [REST web services](https://wiki.openmrs.org/x/xoAaAQ) resources under the module namespace
 `/openmrs/ws/rest/v1/metadataexport`, so they follow every REST module convention: `?v=ref|default|full`
-representations, `?startIndex=&limit=` paging with `results`/`links`/`totalCount` (`totalCount=true`
+representations (lists default to `ref`), `?startIndex=&limit=` paging with `results`/`links`/`totalCount` (`totalCount=true`
 to ask for it), `includeAll=true` to include retired items, the standard `{"error": {...}}` body
 with `fieldErrors`/`globalErrors` on validation failures, and the module's authentication filter
 (basic auth or a session). The two things the framework cannot express - a fixed list of strings
@@ -283,15 +281,13 @@ kept separate so a role can pull exports without being able to change them. Both
 Download must be paired with Get: every write renders the saved object in its response, and that
 rendering reads (for example `latestBuild`), so a Manage-only role would have its `POST /packages`
 succeed and then get back a privilege error instead of the created package; likewise the download
-looks the build up before streaming it. Note the REST module's own convention that
-list and search responses are `ref` representations unless the request carries `?v=default` or
-`?v=full`.
+looks the build up before streaming it.
 
 If the server restarts mid-build, the activator marks any stranded QUEUED/RUNNING builds as
 FAILED on startup so they never block future builds of their package.
 
 Zips and their unzipped working copies accumulate under
-`<app data dir>/metadataexport/packages/<package-uuid>/<version>/` — there is no retention policy
+`<app data dir>/metadataexport/packages/<package-uuid>/<version>/`; there is no retention policy
 yet, so clean up old builds manually if disk space matters. Note also that these endpoints are
 session-authenticated but not CSRF-protected (nothing under `/ws/*` is); treat them as an
 admin-only API.
@@ -303,10 +299,10 @@ Requirements
 
 Adding a new domain
 -------------------
-Supporting a new metadata type is a new class, never a new method on the service; there is no
-registry to edit.
+Supporting a new metadata type is a new class, never a new method on the service.
 
-1. Write a `DomainExporter` and annotate it `@Component` so it is discovered automatically. For a
+1. Write a `DomainExporter` and annotate it `@Component`; component scanning registers it, there is
+   no list to edit. For a
    CSV domain, extend `CsvDomainExporter<T>`:
 
 ```java
@@ -353,13 +349,13 @@ Exporters that only contribute extra columns to an existing row (not the primary
 `BaseLineExporter<T>` directly instead.
 
 A CSV domain may emit more than one file by overriding `partition(instances)` (the default is one
-file). When the files must load in a set sequence — e.g. idgen pools after the sources they
-reference — also override `order(fileName)` to stamp each file with an Initializer `_order:`
+file). When the files must load in a set sequence (e.g. idgen pools after the sources they
+reference), also override `order(fileName)` to stamp each file with an Initializer `_order:`
 header.
 
 For an XML domain (Initializer loads some domains, such as global properties, from XML rather than
 CSV), extend `XmlDomainExporter<T>` instead of `CsvDomainExporter<T>`. Build the DOM in
-`toDocuments(instances)` — keyed by file name so a domain can emit one file or many — and use the
+`toDocuments(instances)`, keyed by file name so a domain can emit one file or many, and use the
 inherited `newDocument()` to get a `Document` without JAXP boilerplate; the base handles indentation,
 encoding, and placement in the domain directory the `ExportContext` chooses:
 
@@ -391,8 +387,8 @@ public class GlobalPropertyDomainExporter extends XmlDomainExporter<GlobalProper
 ```
 
 For a JSON domain (Initializer loads AMPATH forms and their translations from one JSON file per
-form), extend `JsonDomainExporter<T>`. Build the Jackson trees in `toDocuments(instances)` — again
-keyed by file name, and leaving an instance out of the map is how you skip it — either by parsing
+form), extend `JsonDomainExporter<T>`. Build the Jackson trees in `toDocuments(instances)`, again
+keyed by file name (leaving an instance out of the map is how you skip it), either by parsing
 stored content with Jackson or from scratch with the inherited `newObject()`; the base handles
 pretty-printing, encoding, and placement in the domain directory the `ExportContext` chooses:
 
@@ -420,8 +416,8 @@ public class AmpathFormDomainExporter extends JsonDomainExporter<Form> {
 
 Any other domain whose files are neither CSV, XML nor JSON (for example the address hierarchy's
 whole-config directory) skips the base classes and implements `DomainExporter` directly. Its
-`export(bucket, context)` must write under `context.domainDir(getDomain())` — that is what puts the
-files where the startup export and a package zip each need them — as
+`export(bucket, context)` must write under `context.domainDir(getDomain())`, which is what puts the
+files where the startup export and a package zip each need them, as
 `AddressHierarchyDomainExporter` does.
 
 Two optional hooks on `DomainExporter` matter only when a domain does not export every row it has.
@@ -433,28 +429,13 @@ them so a package naming such a row fails with the reason instead of as an unkno
 package naming a few rows does not load the whole table; a filtering domain must keep the default,
 and no domain should override `getInstancesByUuids` itself.
 
-That is all. Because the exporter is a `@Component`, it is registered automatically; there is no
-list to edit. Selection, closure, routing, and writing are handled by the framework.
-
 Known limitations
 -----------------
 * Concept description UUIDs and index-term names are not round-trip-able (Initializer
   format/loader limitations), so they are not preserved or re-loadable.
-* The startup export (when enabled via `metadataexport.exportOnStartup`) always exports all
-  instances of the registered domains; instance-level selection is available through export
-  packages (see "Export packages (REST)").
 * Cross-domain closure only pulls in objects whose domain has a registered exporter.
-* Appointment service definitions lose their weekly availability, initial appointment status and
-  the seconds of their start/end times (Initializer format/loader limitations). Voided appointment
-  metadata is never exported; that is this module's choice, see the domain notes above.
 
 Building from source
 --------------------
 Java 8+ and Maven. `mvn clean package` produces `omod/target/metadataexport-*.omod`. Code
 formatting is handled by Spotless during the build (`mvn spotless:apply` to format manually).
-
-Installation
-------------
-Build the `.omod`, then either upload it via Administration > Manage Modules or drop it into the
-OpenMRS application data directory's `modules/` folder and restart. Ensure the Initializer module
-is also installed.
