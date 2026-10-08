@@ -18,7 +18,6 @@ import org.junit.jupiter.api.io.TempDir;
 import org.openmrs.Form;
 import org.openmrs.FormResource;
 import org.openmrs.Location;
-import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ValidationException;
 import org.openmrs.api.context.Context;
@@ -31,6 +30,7 @@ import org.openmrs.module.metadataexport.api.model.ExportPackageEntry;
 import org.openmrs.module.metadataexport.api.model.ExportStatus;
 import org.openmrs.test.jupiter.BaseModuleContextSensitiveTest;
 import org.openmrs.util.OpenmrsUtil;
+import org.springframework.security.access.AccessDeniedException;
 
 import java.io.File;
 import java.io.InputStream;
@@ -183,27 +183,27 @@ class MetadataExportServiceTest extends BaseModuleContextSensitiveTest {
 		ExportPackage saved = service.saveExportPackage(packageWith("Guarded", Domain.LOCATIONS.name()));
 		Context.becomeUser("3-4"); // butch: no metadata export privileges in the standard dataset
 		try {
-			assertThrows(APIAuthenticationException.class, () -> service.getPackageByUuid(saved.getUuid()));
+			assertThrows(AccessDeniedException.class, () -> service.getPackageByUuid(saved.getUuid()));
 			
 			Context.addProxyPrivilege(MetadataExportConstants.GET_PRIVILEGE);
 			assertNotNull(service.getPackageByUuid(saved.getUuid()));
 			assertEquals(1, service.getCountOfPackages(false));
 			assertEquals(1, service.getPackages(false, 0, 10).size());
 			assertEquals(0, service.getCountOfBuilds(saved));
-			assertThrows(APIAuthenticationException.class,
+			assertThrows(AccessDeniedException.class,
 			    () -> service.saveExportPackage(packageWith("Not allowed", Domain.LOCATIONS.name())));
-			assertThrows(APIAuthenticationException.class, () -> service.retireExportPackage(saved, "x"));
-			assertThrows(APIAuthenticationException.class, () -> service.saveExportBuild(new ExportBuild()));
-			assertThrows(APIAuthenticationException.class, () -> service.getBuildZip(new ExportBuild()));
-			assertThrows(APIAuthenticationException.class, () -> service.failStrandedBuilds("x"));
+			assertThrows(AccessDeniedException.class, () -> service.retireExportPackage(saved, "x"));
+			assertThrows(AccessDeniedException.class, () -> service.saveExportBuild(new ExportBuild()));
+			assertThrows(AccessDeniedException.class, () -> service.getBuildZip(new ExportBuild()));
+			assertThrows(AccessDeniedException.class, () -> service.failStrandedBuilds("x"));
 			
 			// Manage does not imply Download, and Download does not imply Manage
 			Context.addProxyPrivilege(MetadataExportConstants.MANAGE_PRIVILEGE);
-			assertThrows(APIAuthenticationException.class, () -> service.getBuildZip(new ExportBuild()));
+			assertThrows(AccessDeniedException.class, () -> service.getBuildZip(new ExportBuild()));
 			Context.removeProxyPrivilege(MetadataExportConstants.MANAGE_PRIVILEGE);
 			Context.addProxyPrivilege(MetadataExportConstants.DOWNLOAD_PRIVILEGE);
 			assertNull(service.getBuildZip(new ExportBuild()), "no zip path yet, but the call is allowed");
-			assertThrows(APIAuthenticationException.class, () -> service.retireExportPackage(saved, "x"));
+			assertThrows(AccessDeniedException.class, () -> service.retireExportPackage(saved, "x"));
 		}
 		finally {
 			Context.removeProxyPrivilege(MetadataExportConstants.DOWNLOAD_PRIVILEGE);

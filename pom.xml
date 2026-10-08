@@ -61,6 +61,7 @@
         <initializerVersion>3.0.0-SNAPSHOT</initializerVersion>
         <patientflagsVersion>4.0.0-SNAPSHOT</patientflagsVersion>
         <jacocoVersion>0.8.12</jacocoVersion>
+        <lombokVersion>1.18.38</lombokVersion>
         <emrapiVersion>4.0.0-SNAPSHOT</emrapiVersion>
         <fhir2Version>6.0.0-SNAPSHOT</fhir2Version>
         <idgenVersion>6.0.0-SNAPSHOT</idgenVersion>
@@ -91,6 +92,21 @@
 
 	<build>
 		<plugins>
+			<!-- javac 25, one of the JDKs CI builds Platform 3 modules with, only runs annotation processors
+			     named on the processor path, not ones it finds on the classpath -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<annotationProcessorPaths>
+						<path>
+							<groupId>org.projectlombok</groupId>
+							<artifactId>lombok</artifactId>
+							<version>${lombokVersion}</version>
+						</path>
+					</annotationProcessorPaths>
+				</configuration>
+			</plugin>
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
@@ -118,7 +134,7 @@
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
-			<version>1.18.38</version>
+			<version>${lombokVersion}</version>
 		</dependency>
 
 		<dependency>

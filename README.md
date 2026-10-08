@@ -36,7 +36,7 @@ Currently supported domains:
   drug/dosage-form/ingredient concepts are pulled in via cross-domain closure
 * Order types (name, description, java class name, parent, concept classes): parent order types and
   concept classes are pulled in via cross-domain closure
-* Flags (name, criteria, evaluator, message, priority, enabled, tags, description): requires the patientflags module (3.0+)
+* Flags (name, criteria, evaluator, message, priority, enabled, tags, description): requires the patientflags module (4.0+)
 * Order frequencies (frequency per day, concept frequency): the referenced concept is pulled in via
   cross-domain closure
 * Programs (name, description, program concept, outcomes concept): the referenced concepts are pulled in via
@@ -49,7 +49,7 @@ Currently supported domains:
   and member concepts are pulled in via cross-domain closure
 * Program workflow states (workflow, state concept, initial, terminal): the referenced workflow and
   state concept are pulled in via cross-domain closure
-* Procedure types (name, description): requires the emrapi module (3.4+)
+* Procedure types (name, description): requires the emrapi module (4.0+)
 * Metadata sets (name, description): requires the metadatamapping module
 * Metadata set members (name, description, sort weight, metadata class, metadata uuid, metadata
   set uuid): the owning metadata set and the referenced metadata item are pulled in via
@@ -57,9 +57,6 @@ Currently supported domains:
 * Metadata term mappings (mapping code, mapping source, metadata class name, metadata uuid): the
   referenced metadata item is pulled in via cross-domain closure; requires the metadatamapping
   module
-* Metadata sharing (raw zip packages already built and published through the metadatasharing
-  module's own UI, copied out as-is; not CSV/XML, one file per package): requires the
-  metadatasharing module
 * Identifier sources (identifier type, name, description; sequential: prefix, suffix, first
   identifier base, min/max length, base character set; remote: url, user, password; pool: backing
   source, batch size, minimum size, refill with task, sequential allocation): written as
@@ -72,33 +69,33 @@ Currently supported domains:
   note on exclusions under "Export packages (REST)"): custom identifier source types from other modules, remote sources with no
   user (Initializer requires one), pools whose backing source is missing or itself left out, as are
   auto generation options pointing at any such source; reserved identifiers on a source are not exported (Initializer
-  has no column for them) and are flagged with a warning; requires the idgen module (4.6+)
+  has no column for them) and are flagged with a warning; requires the idgen module (6.0+)
 * Auto generation options (identifier type, location, identifier source, manual entry enabled,
   auto generation enabled): the referenced identifier type, source and location are pulled in via
-  cross-domain closure; requires the idgen module (4.6+)
+  cross-domain closure; requires the idgen module (6.0+)
 * FHIR concept sources (concept source, url): the referenced concept source is pulled in via
   cross-domain closure; name and description are not exported (Initializer has no columns for
   them; it sets the name from the concept source when it creates the row); rows without a
   concept source are left out as exclusions (Initializer requires that column), and when several
   rows share one concept source only one is exported, preferring the unretired row, the rest
   recorded as exclusions (Initializer matches rows by concept source, so duplicates would collapse
-  unpredictably on import); requires the fhir2 module (1.6+)
+  unpredictably on import); requires the fhir2 module (6.0+)
 * FHIR patient identifier systems (patient identifier type, url): the referenced patient
   identifier type is pulled in via cross-domain closure; name and description are not exported
   (Initializer has no columns for them; it overwrites the name with the identifier type's name
   on import); rows without an identifier type are left out as exclusions (Initializer requires
   that column), and when several rows share one identifier type only one is exported, preferring
   the unretired row, the rest recorded as exclusions (Initializer matches rows by identifier type,
-  so duplicates would collapse unpredictably on import); requires the fhir2 module (1.6+)
+  so duplicates would collapse unpredictably on import); requires the fhir2 module (6.0+)
 * Address hierarchy (the `addressConfiguration.xml`, rebuilt from the ordered hierarchy levels and
   the live address template, plus a headerless `addresshierarchy.csv` of one root-to-leaf path per
   leaf entry; not CSV/XML rows but a whole-config directory): requires the addresshierarchy module
-* Cohort types (name, description): requires the cohort module (3.5+)
+* Cohort types (name, description): requires the cohort module (4.0+)
 * Cohort attribute types (name, description, datatype classname, preferred handler classname,
   handler config, min/max occurs): retired attribute types are not exported (Initializer's parser
   cannot resolve them: its lookups exclude retired rows, so re-importing one fails on the name/uuid
   constraints), and datatype config is not exported (Initializer has no column for it); requires
-  the cohort module (3.5+)
+  the cohort module (4.0+)
 * System tasks (name, title, description, priority, default assignee role, rationale): the
   default assignee is written as the provider role's uuid and returned as a cross-domain
   dependency, but provider roles themselves are not yet exported: Initializer's `providerroles`
@@ -109,7 +106,7 @@ Currently supported domains:
   present a providermanagement provider role with the same uuid must already exist on the importing
   server or the row fails to import (core's own `provider_role` table is not consulted); a task
   whose assignee role no longer exists on the exporting server is exported without the assignee
-  column, with a warning; requires the tasks module (1.0+)
+  column, with a warning; requires the tasks module (3.0+)
 * Queues (name, description, service, status concept set, priority concept set, location): the
   referenced concepts and location are pulled in via cross-domain closure, and so are the
   `queue.serviceConceptSetName` global property and the concept set it names, because the queue
@@ -118,7 +115,7 @@ Currently supported domains:
   exported and are recorded as exclusions (Initializer bootstraps a row through the queue
   module's lookup by uuid, which excludes retired queues, so a retired row can never be matched on
   the target: where it already exists the re-import fails on the uuid constraint and Initializer
-  2.12 then abandons the rest of the file); requires the queue module (3.0+)
+  2.12 then abandons the rest of the file); requires the queue module (4.0+)
 * AMPATH forms (one JSON schema file per form, the same shape the O3 Form Builder saves: the form's
   `JSON schema` resource is written back as the file, with the `name`, `version`, `description`,
   `published`, `retired` and `encounter` entries Initializer copies onto the form refreshed from the
@@ -144,31 +141,31 @@ Currently supported domains:
   resource whose clob is missing or does not hold a JSON object is left out as an exclusion, since
   there is nothing to write; a resource carrying only `form_name_translation` (the localized form
   name, a documented Initializer use) is exported like any other
-* Appointment specialities (name): requires the Bahmni appointments module (1.2.1+)
+* Appointment specialities (name): requires the Bahmni appointments module (3.0.0+)
 * Appointment service definitions (name, description, duration, start time, end time, max load,
   speciality, location, label colour): the speciality and location are written by uuid and pulled
   in via cross-domain closure; start and end times are written as `HH:mm`, the only format
   Initializer parses, so seconds are dropped; voided definitions are not exported by design: the
   appointments module rejects a save whose name is already held by a live definition, so a voided
   row collides with the live definition that replaced it; weekly availability and the initial appointment status are not exported
-  (Initializer has no column for them); requires the Bahmni appointments module (1.2.1+)
+  (Initializer has no column for them); requires the Bahmni appointments module (3.0.0+)
 * Appointment service types (name, duration, service definition): the owning service definition is
   written by uuid and pulled in via cross-domain closure; voided types and the types of voided
   definitions are not exported, so a voided definition can never enter the package as a live row
   through its types; note that Initializer's own loader rebuilds a definition's type set from its
   non-voided types when it imports a type, so voided types already on the importing server are
-  deleted by the import; requires the Bahmni appointments module (1.2.1+)
+  deleted by the import; requires the Bahmni appointments module (3.0.0+)
 * Billable services (service name, short name, concept, service type, service status): referenced
-  concepts are pulled in via cross-domain closure; requires the billing module (2.4.0+)
+  concepts are pulled in via cross-domain closure; requires the billing module (3.0.0+)
 * Cash points (name, description, location): referenced location is pulled in via cross-domain
-  closure; requires the billing module (2.4.0+)
+  closure; requires the billing module (3.0.0+)
 * Cashier item prices (name, price, payment mode, stock item, billable service): referenced
   payment mode and billable service are pulled in via cross-domain closure; **stock-item references
   are not self-contained**: `CashierItemPriceLineProcessor` resolves a stock item through
   `StockManagementService.getStockItemByUuid` and throws if it is absent, and Initializer has no
   stock-item domain for the closure to fall back on, so rows that reference a stock item only load
-  onto a server that already holds the same stock items; requires the billing module (2.4.0+)
-* Payment modes (name, attributes): requires the billing module (2.4.0+)
+  onto a server that already holds the same stock items; requires the billing module (3.0.0+)
+* Payment modes (name, attributes): requires the billing module (3.0.0+)
 
 Domains contributed by other modules that are supportable but not covered, and why:
 
@@ -178,6 +175,10 @@ Domains contributed by other modules that are supportable but not covered, and w
   `FullTextQueryCreatedEventListener` depends on a core class removed in 2.8.0), and its stored
   mappings reference entities by database id rather than uuid, so they are not portable between
   servers without being resolved first.
+* Metadata sharing packages (the raw zips built and published through the metadatasharing module's
+  own UI): the metadatasharing module has no Platform 3 release, and 1.2.2 does not start there
+  (its Spring context extends `serializationServiceTarget`, which core 3.0 removed). Its exporter is
+  kept, gated on metadatasharing 1.2.2 being started, so it stays inactive on this platform.
 
 Initializer domains that cannot be exported, and why:
 
@@ -320,8 +321,9 @@ admin-only API.
 
 Requirements
 ------------
-* Initializer 2.12.1+
-* REST Web Services 3.1.0+
+* OpenMRS Platform 3.0.0+
+* Initializer 3.0.0+
+* REST Web Services 5.0.0+
 
 Adding a new domain
 -------------------
