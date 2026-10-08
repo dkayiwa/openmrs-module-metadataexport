@@ -467,5 +467,5 @@ Known limitations
 
 Building from source
 --------------------
-Java 8+ and Maven. `mvn clean package` produces `omod/target/metadataexport-*.omod`. Code
+Java 21+ and Maven. `mvn clean package` produces `omod/target/metadataexport-*.omod`. Code
 formatting is handled by Spotless during the build (`mvn spotless:apply` to format manually).
