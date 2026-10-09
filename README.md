@@ -69,10 +69,10 @@ Currently supported domains:
   note on exclusions under "Export packages (REST)"): custom identifier source types from other modules, remote sources with no
   user (Initializer requires one), pools whose backing source is missing or itself left out, as are
   auto generation options pointing at any such source; reserved identifiers on a source are not exported (Initializer
-  has no column for them) and are flagged with a warning; requires the idgen module (6.0+)
+  has no column for them) and are flagged with a warning; requires the idgen module (7.0+)
 * Auto generation options (identifier type, location, identifier source, manual entry enabled,
   auto generation enabled): the referenced identifier type, source and location are pulled in via
-  cross-domain closure; requires the idgen module (6.0+)
+  cross-domain closure; requires the idgen module (7.0+)
 * FHIR concept sources (concept source, url): the referenced concept source is pulled in via
   cross-domain closure; name and description are not exported (Initializer has no columns for
   them; it sets the name from the concept source when it creates the row); rows without a

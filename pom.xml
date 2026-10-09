@@ -64,7 +64,7 @@
         <lombokVersion>1.18.38</lombokVersion>
         <emrapiVersion>4.0.0-SNAPSHOT</emrapiVersion>
         <fhir2Version>6.0.0-SNAPSHOT</fhir2Version>
-        <idgenVersion>6.0.0-SNAPSHOT</idgenVersion>
+        <idgenVersion>7.0.0-SNAPSHOT</idgenVersion>
         <metadatamappingVersion>3.0.0-SNAPSHOT</metadatamappingVersion>
         <metadatasharingVersion>1.2.2</metadatasharingVersion>
         <addresshierarchyVersion>4.0.0-SNAPSHOT</addresshierarchyVersion>
@@ -75,7 +75,6 @@
 		<appointmentsVersion>3.0.0-SNAPSHOT</appointmentsVersion>
 		<billingVersion>3.0.0-SNAPSHOT</billingVersion>
 		<stockmanagementVersion>4.0.0-SNAPSHOT</stockmanagementVersion>
-		<openmrsEventVersion>5.0.0-SNAPSHOT</openmrsEventVersion>
     </properties>
 
 	<dependencyManagement>
@@ -222,12 +221,6 @@
 			<artifactId>stockmanagement-api</artifactId>
 			<version>${stockmanagementVersion}</version>
 			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.openmrs</groupId>
-			<artifactId>event-api</artifactId>
-			<version>${openmrsEventVersion}</version>
-			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.openmrs.module</groupId>
