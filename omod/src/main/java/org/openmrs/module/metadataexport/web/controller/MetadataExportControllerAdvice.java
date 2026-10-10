@@ -15,6 +15,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
@@ -25,7 +26,8 @@ import java.util.Map;
 /**
  * Error handling for the two plain Spring controllers only (the zip download and the domain list),
  * scoped by type so it never touches {@code MetadataExportRestController}, whose REST-module base
- * class carries its own handlers. Authentication failures become 401/403; anything else these
+ * class carries its own handlers. Authentication failures and denied privileges (which core 3.0
+ * reports as Spring Security's {@link AccessDeniedException}) become 401/403; anything else these
  * controllers can throw is a server fault, so it is a logged 500. Extends
  * {@link ResponseEntityExceptionHandler} so Spring's request-shape exceptions keep their standard
  * 4xx statuses instead of falling into the Exception catch-all below.
@@ -34,7 +36,8 @@ import java.util.Map;
 @RestControllerAdvice(assignableTypes = { ExportBuildController.class, ExportDomainController.class })
 public class MetadataExportControllerAdvice extends ResponseEntityExceptionHandler {
 	
-	@ExceptionHandler({ APIAuthenticationException.class, ContextAuthenticationException.class })
+	@ExceptionHandler({ AccessDeniedException.class, APIAuthenticationException.class,
+	        ContextAuthenticationException.class })
 	public ResponseEntity<Map<String, String>> handleAuthentication(RuntimeException e) {
 		HttpStatus status = Context.isAuthenticated() ? HttpStatus.FORBIDDEN : HttpStatus.UNAUTHORIZED;
 		return ResponseEntity.status(status).body(Collections.singletonMap("error", e.getMessage()));

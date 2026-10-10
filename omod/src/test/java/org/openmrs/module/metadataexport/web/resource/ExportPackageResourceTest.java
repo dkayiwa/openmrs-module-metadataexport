@@ -11,7 +11,7 @@ package org.openmrs.module.metadataexport.web.resource;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.openmrs.api.APIAuthenticationException;
+import org.openmrs.api.ValidationException;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.initializer.Domain;
 import org.openmrs.module.metadataexport.api.MetadataExportService;
@@ -27,9 +27,9 @@ import org.openmrs.module.webservices.rest.web.response.IllegalRequestException;
 import org.openmrs.module.webservices.rest.web.response.ObjectNotFoundException;
 import org.openmrs.module.webservices.rest.web.response.ResourceDoesNotSupportOperationException;
 import org.openmrs.module.webservices.rest.web.v1_0.controller.jupiter.MainResourceControllerTest;
-import org.openmrs.module.webservices.validation.ValidationException;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.util.ArrayList;
@@ -307,7 +307,7 @@ class ExportPackageResourceTest extends MainResourceControllerTest {
 	void requestsAreRefusedWhenNotAuthenticated() {
 		Context.logout();
 		try {
-			assertThrows(APIAuthenticationException.class, () -> handle(newGetRequest(getURI())));
+			assertThrows(AccessDeniedException.class, () -> handle(newGetRequest(getURI())));
 		}
 		finally {
 			authenticate();

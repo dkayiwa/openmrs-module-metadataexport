@@ -44,6 +44,8 @@
 		</property>
 	</bean>
 
+	<bean class="org.openmrs.module.metadataexport.ModulesWithoutPlatform3ReleaseBeanFilter"/>
+
 	<bean id="initializer.InitializerMessageSource"
 		  class="org.openmrs.module.metadataexport.StubInitializerMessageSource"/>
 
